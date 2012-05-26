@@ -1,4 +1,6 @@
 <?php
+namespace v1;
+
 /**
  * Generator class
  * 
@@ -11,31 +13,15 @@
  * 
  * @version 1.0
  */
-class Generator {
+class Generator extends \inc\GeneratorAbstract {
 	
 	/**
-	 * URL for static content
+	 * Version information
 	 * 
 	 * @var string
 	 */
-	public $url = "http://api.piratskastranka.net/";
+	protected $version = 1;
 	
-	/**
-	 * Type of return data (xml || json)
-	 * 
-	 * @var string
-	 */
-	public $type;
-	
-	/**
-	 * Constructor
-	 * 
-	 * @param string $type 
-	 */
-	public function __construct($type) {
-		$this->type = $type;
-	}
-
 	/**
 	 * ACTION: Returns basic data about all pirate parties
 	 */
@@ -75,70 +61,21 @@ class Generator {
 			// Add country image
 			$flag = "flags/".strtolower($code).".gif";
 			if(file_exists($flag)) {
-				$csvData[$code]["flags"] = $this->url . $flag;
+				$csvData[$code]["flags"] = $this->conf["staticUrl"] . $flag;
 			}
 			// Add logo
 			$logo = "logo/".$code.".png";
 			if(file_exists($logo)) {
-				$csvData[$code]["logo"] = $this->url . $logo;
+				$csvData[$code]["logo"] = $this->conf["staticUrl"] . $logo;
 			}
 			
 			// add banner
 			$banner = "banner/".$code.".gif";
 			if(file_exists($banner)) {
-				$csvData[$code]["banner"] = $this->url . $banner;
+				$csvData[$code]["banner"] = $this->conf["staticUrl"] . $banner;
 			}
 		}
 		$this->output($csvData);
-	}
-	
-	/**
-	 * Parses the data for output
-	 * 
-	 * @param array $data
-	 * 
-	 * @todo Should be moved to abstract class
-	 */
-	protected function output(array $data) {
-		switch ($this->type) {
-			case "json":
-			case "JSON":
-				header("Content-type: application/json");
-				$output = json_encode($data);
-				if ($output === false) {
-					echo "Error in data retrival";
-					die();
-				}
-				
-				break;
-				
-			case "xml":
-			case "XML":
-				header('Content-type: text/xml');
-				$output = $this->encodeToXML($data);
-				
-				break;
-		}
-		echo $output;
-	}
-	
-	/**
-	 * Basic encoder to XML
-	 * 
-	 * @param array $data
-	 * 
-	 * @return string 
-	 */
-	private function encodeToXML(array $data) {
-		$output = "<xml>";
-		foreach ($data as $k => $v) {
-			$output .= "<result id='{$k}'>";
-			foreach ($v as $i => $j)
-				$output .= "<" . $i . ">" . $j . "</" . $i . ">";
-			$output .= "</result>";
-		}
-		$output .= "</xml>";
-		return $output;
 	}
 
 }

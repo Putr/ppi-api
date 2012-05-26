@@ -18,6 +18,7 @@ NGINX rewrite:
                 rewrite ^ /index.php?q=$uri&$args last;
         }
 
+
 FUTURE:
 -------
 
